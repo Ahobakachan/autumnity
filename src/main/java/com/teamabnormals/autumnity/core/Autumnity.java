@@ -6,6 +6,7 @@ import com.teamabnormals.autumnity.core.data.server.*;
 import com.teamabnormals.autumnity.core.data.server.tags.*;
 import com.teamabnormals.autumnity.core.other.AutumnityClientCompat;
 import com.teamabnormals.autumnity.core.other.AutumnityCompat;
+import com.teamabnormals.autumnity.core.other.AutumnityRUMapleCompat;
 import com.teamabnormals.autumnity.core.registry.*;
 import com.teamabnormals.blueprint.core.util.registry.RegistryHelper;
 import com.teamabnormals.gallery.core.data.client.GalleryItemModelProvider;
@@ -26,73 +27,76 @@ import java.util.concurrent.CompletableFuture;
 
 @Mod(Autumnity.MOD_ID)
 public class Autumnity {
-	public static final String MOD_ID = "autumnity";
-	public static final RegistryHelper REGISTRY_HELPER = new RegistryHelper(MOD_ID);
+\tpublic static final String MOD_ID = "autumnity";
+\tpublic static final RegistryHelper REGISTRY_HELPER = new RegistryHelper(MOD_ID);
 
-	public Autumnity(IEventBus bus, ModContainer container) {
-		AutumnityBlocks.BLOCKS.register(bus);
-		AutumnityItems.ITEMS.register(bus);
-		AutumnityEntityTypes.ENTITY_TYPES.register(bus);
-		AutumnitySoundEvents.SOUND_EVENTS.register(bus);
-		AutumnityMobEffects.MOB_EFFECTS.register(bus);
-		AutumnityPotions.POTIONS.register(bus);
-		AutumnityFeatures.FEATURES.register(bus);
-		AutumnityFeatures.TREE_DECORATOR_TYPES.register(bus);
-		AutumnityParticleTypes.PARTICLE_TYPES.register(bus);
-		AutumnityConditions.CONDITION_SERIALIZERS.register(bus);
-		AutumnityCriteriaTriggers.TRIGGERS.register(bus);
-		AutumnityArmorMaterials.ARMOR_MATERIALS.register(bus);
+\tpublic Autumnity(IEventBus bus, ModContainer container) {
+\t\tAutumnityBlocks.BLOCKS.register(bus);
+\t\tAutumnityItems.ITEMS.register(bus);
+\t\tAutumnityEntityTypes.ENTITY_TYPES.register(bus);
+\t\tAutumnitySoundEvents.SOUND_EVENTS.register(bus);
+\t\tAutumnityMobEffects.MOB_EFFECTS.register(bus);
+\t\tAutumnityPotions.POTIONS.register(bus);
+\t\tAutumnityFeatures.FEATURES.register(bus);
+\t\tAutumnityFeatures.TREE_DECORATOR_TYPES.register(bus);
+\t\tAutumnityParticleTypes.PARTICLE_TYPES.register(bus);
+\t\tAutumnityConditions.CONDITION_SERIALIZERS.register(bus);
+\t\tAutumnityCriteriaTriggers.TRIGGERS.register(bus);
+\t\tAutumnityArmorMaterials.ARMOR_MATERIALS.register(bus);
 
-		bus.addListener(this::commonSetup);
-		bus.addListener(this::clientSetup);
-		bus.addListener(this::dataSetup);
+\t\tbus.addListener(this::commonSetup);
+\t\tbus.addListener(this::clientSetup);
+\t\tbus.addListener(this::dataSetup);
 
-		container.registerConfig(ModConfig.Type.COMMON, AutumnityConfig.COMMON_SPEC);
-	}
+\t\tcontainer.registerConfig(ModConfig.Type.COMMON, AutumnityConfig.COMMON_SPEC);
+\t}
 
-	private void commonSetup(FMLCommonSetupEvent event) {
-		event.enqueueWork(AutumnityCompat::register);
-	}
+\tprivate void commonSetup(FMLCommonSetupEvent event) {
+\t\tevent.enqueueWork(() -> {
+\t\t\tAutumnityCompat.register();
+\t\t\tAutumnityRUMapleCompat.register();
+\t\t});
+\t}
 
-	private void clientSetup(FMLClientSetupEvent event) {
-		event.enqueueWork(AutumnityClientCompat::register);
-	}
+\tprivate void clientSetup(FMLClientSetupEvent event) {
+\t\tevent.enqueueWork(AutumnityClientCompat::register);
+\t}
 
-	private void dataSetup(GatherDataEvent event) {
-		DataGenerator generator = event.getGenerator();
-		PackOutput output = generator.getPackOutput();
-		CompletableFuture<Provider> provider = event.getLookupProvider();
-		ExistingFileHelper helper = event.getExistingFileHelper();
+\tprivate void dataSetup(GatherDataEvent event) {
+\t\tDataGenerator generator = event.getGenerator();
+\t\tPackOutput output = generator.getPackOutput();
+\t\tCompletableFuture<Provider> provider = event.getLookupProvider();
+\t\tExistingFileHelper helper = event.getExistingFileHelper();
 
-		boolean server = event.includeServer();
+\t\tboolean server = event.includeServer();
 
-		AutumnityDatapackProvider datapackEntries = new AutumnityDatapackProvider(output, provider);
-		generator.addProvider(server, datapackEntries);
-		provider = datapackEntries.getRegistryProvider();
+\t\tAutumnityDatapackProvider datapackEntries = new AutumnityDatapackProvider(output, provider);
+\t\tgenerator.addProvider(server, datapackEntries);
+\t\tprovider = datapackEntries.getRegistryProvider();
 
-		AutumnityBlockTagsProvider blockTags = new AutumnityBlockTagsProvider(output, provider, helper);
-		generator.addProvider(server, blockTags);
-		generator.addProvider(server, new AutumnityItemTagsProvider(output, provider, blockTags.contentsGetter(), helper));
-		generator.addProvider(server, new AutumnityBiomeTagsProvider(output, provider, helper));
-		generator.addProvider(server, new AutumnityBannerPatternTagsProvider(output, provider, helper));
-		generator.addProvider(server, new AutumnityPaintingVariantTagsProvider(output, provider, helper));
-		generator.addProvider(server, new AutumnityStructureTagsProvider(output, provider, helper));
-		generator.addProvider(server, new AutumnityEntityTypeTagsProvider(output, provider, helper));
-		generator.addProvider(server, new AutumnityRecipeProvider(output, provider));
-		generator.addProvider(server, AutumnityAdvancementProvider.create(output, provider, helper));
-		generator.addProvider(server, new AutumnityLootTableProvider(output, provider));
-		generator.addProvider(server, new AutumnityAdvancementModifierProvider(output, provider));
-		generator.addProvider(server, new AutumnityDataRemolderProvider(output, provider));
-		generator.addProvider(server, new AutumnityDataMapProvider(output, provider));
+\t\tAutumnityBlockTagsProvider blockTags = new AutumnityBlockTagsProvider(output, provider, helper);
+\t\tgenerator.addProvider(server, blockTags);
+\t\tgenerator.addProvider(server, new AutumnityItemTagsProvider(output, provider, blockTags.contentsGetter(), helper));
+\t\tgenerator.addProvider(server, new AutumnityBiomeTagsProvider(output, provider, helper));
+\t\tgenerator.addProvider(server, new AutumnityBannerPatternTagsProvider(output, provider, helper));
+\t\tgenerator.addProvider(server, new AutumnityPaintingVariantTagsProvider(output, provider, helper));
+\t\tgenerator.addProvider(server, new AutumnityStructureTagsProvider(output, provider, helper));
+\t\tgenerator.addProvider(server, new AutumnityEntityTypeTagsProvider(output, provider, helper));
+\t\tgenerator.addProvider(server, new AutumnityRecipeProvider(output, provider));
+\t\tgenerator.addProvider(server, AutumnityAdvancementProvider.create(output, provider, helper));
+\t\tgenerator.addProvider(server, new AutumnityLootTableProvider(output, provider));
+\t\tgenerator.addProvider(server, new AutumnityAdvancementModifierProvider(output, provider));
+\t\tgenerator.addProvider(server, new AutumnityDataRemolderProvider(output, provider));
+\t\tgenerator.addProvider(server, new AutumnityDataMapProvider(output, provider));
 
-		boolean client = event.includeClient();
-		generator.addProvider(client, new AutumnityItemModelProvider(output, helper));
-		generator.addProvider(client, new AutumnityBlockStateProvider(output, helper));
+\t\tboolean client = event.includeClient();
+\t\tgenerator.addProvider(client, new AutumnityItemModelProvider(output, helper));
+\t\tgenerator.addProvider(client, new AutumnityBlockStateProvider(output, helper));
 
-		generator.addProvider(client, new GalleryItemModelProvider(MOD_ID, output, helper, provider));
-	}
+\t\tgenerator.addProvider(client, new GalleryItemModelProvider(MOD_ID, output, helper, provider));
+\t}
 
-	public static ResourceLocation location(String path) {
-		return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
-	}
+\tpublic static ResourceLocation location(String path) {
+\t\treturn ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+\t}
 }
