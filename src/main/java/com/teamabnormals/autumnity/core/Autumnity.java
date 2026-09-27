@@ -6,6 +6,7 @@ import com.teamabnormals.autumnity.core.data.server.*;
 import com.teamabnormals.autumnity.core.data.server.tags.*;
 import com.teamabnormals.autumnity.core.other.AutumnityClientCompat;
 import com.teamabnormals.autumnity.core.other.AutumnityCompat;
+import com.teamabnormals.autumnity.core.other.AutumnityRUMapleCompat;
 import com.teamabnormals.autumnity.core.registry.*;
 import com.teamabnormals.blueprint.core.util.registry.RegistryHelper;
 import com.teamabnormals.gallery.core.data.client.GalleryItemModelProvider;
@@ -51,7 +52,10 @@ public class Autumnity {
 	}
 
 	private void commonSetup(FMLCommonSetupEvent event) {
-		event.enqueueWork(AutumnityCompat::register);
+		event.enqueueWork(() -> {
+			AutumnityCompat.register();
+			AutumnityRUMapleCompat.register();
+		});
 	}
 
 	private void clientSetup(FMLClientSetupEvent event) {

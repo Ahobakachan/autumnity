@@ -1,0 +1,9 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#autumnity:ru_maple",
+  "features": [
+    "autumnity:maple_forest_fallen_leaves",
+    "autumnity:patch_foul_berry_bush"
+  ],
+  "step": "vegetal_decoration"
+}

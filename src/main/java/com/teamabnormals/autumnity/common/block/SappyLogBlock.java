@@ -3,6 +3,8 @@ package com.teamabnormals.autumnity.common.block;
 import com.teamabnormals.autumnity.core.registry.AutumnityItems;
 import com.teamabnormals.blueprint.core.util.BlockUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
@@ -13,6 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -22,6 +25,9 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import java.util.function.Supplier;
 
 public class SappyLogBlock extends RotatedPillarBlock {
+	private static final ResourceLocation RU_STRIPPED_MAPLE_LOG = ResourceLocation.fromNamespaceAndPath("regions_unexplored", "stripped_maple_log");
+	private static final ResourceLocation RU_STRIPPED_MAPLE_WOOD = ResourceLocation.fromNamespaceAndPath("regions_unexplored", "stripped_maple_wood");
+
 	private final Supplier<Block> saplessBlock;
 
 	public SappyLogBlock(DeferredBlock<Block> saplessBlockIn, Properties properties) {
@@ -45,10 +51,17 @@ public class SappyLogBlock extends RotatedPillarBlock {
 				player.awardStat(Stats.ITEM_USED.get(stack.getItem()));
 			}
 
-			level.setBlockAndUpdate(pos, BlockUtil.transferAllBlockStates(state, this.saplessBlock.get().defaultBlockState()));
+			level.setBlockAndUpdate(pos, BlockUtil.transferAllBlockStates(state, getSaplessBlock().defaultBlockState()));
 			return ItemInteractionResult.sidedSuccess(level.isClientSide);
 		}
 
 		return super.useItemOn(stack, state, level, pos, player, hand, result);
+	}
+
+	private Block getSaplessBlock() {
+		ResourceLocation blockId = BuiltInRegistries.BLOCK.getKey(this);
+		ResourceLocation targetId = blockId.getPath().equals("sappy_maple_log") ? RU_STRIPPED_MAPLE_LOG : RU_STRIPPED_MAPLE_WOOD;
+		Block ruBlock = BuiltInRegistries.BLOCK.get(targetId);
+		return ruBlock != Blocks.AIR ? ruBlock : this.saplessBlock.get();
 	}
 }
