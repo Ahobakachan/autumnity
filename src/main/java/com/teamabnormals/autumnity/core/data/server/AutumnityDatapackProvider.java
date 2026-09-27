@@ -26,7 +26,6 @@ public class AutumnityDatapackProvider extends DatapackBuiltinEntriesProvider {
 			.add(Registries.NOISE, AutumnityNoiseParameters::bootstrap)
 			.add(Registries.BIOME, AutumnityBiomes::bootstrap)
 			.add(Registries.WOLF_VARIANT, AutumnityWolfVariants::bootstrap)
-			.add(BlueprintDataPackRegistries.MODDED_BIOME_SLICES, AutumnityBiomeSlices::bootstrap)
 			.add(Keys.BIOME_MODIFIERS, AutumnityBiomeModifiers::bootstrap);
 
 	public AutumnityDatapackProvider(PackOutput output, CompletableFuture<Provider> provider) {
