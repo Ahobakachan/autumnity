@@ -5,9 +5,10 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -62,7 +63,7 @@ public final class AutumnityRUMapleCompat {
 		event.setFinalState(BlockUtil.transferAllBlockStates(original, result));
 	}
 
-	private static boolean shouldBecomeSappy(ItemStack stack, Level level) {
+	private static boolean shouldBecomeSappy(ItemStack stack, LevelAccessor level) {
 		int fortune = EnchantmentHelper.getTagEnchantmentLevel(
 				level.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(Enchantments.FORTUNE), stack);
 		float chance = -1.0F / (fortune * (1.0F / 3.0F) + (4.0F / 3.0F)) + 1.0F;
