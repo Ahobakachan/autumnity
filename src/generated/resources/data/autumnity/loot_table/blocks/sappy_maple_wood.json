@@ -10,8 +10,29 @@
       ],
       "entries": [
         {
-          "type": "minecraft:item",
-          "name": "autumnity:sappy_maple_wood"
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "conditions": [
+                {
+                  "condition": "minecraft:location_check",
+                  "predicate": {
+                    "biomes": [
+  "regions_unexplored:maple_forest",
+  "regions_unexplored:autumnal_maple_forest",
+  "regions_unexplored:windswept_maple_forest"
+]
+                  }
+                }
+              ],
+              "name": "regions_unexplored:stripped_maple_wood"
+            },
+            {
+              "type": "minecraft:item",
+              "name": "autumnity:sappy_maple_wood"
+            }
+          ]
         }
       ],
       "rolls": 1.0
