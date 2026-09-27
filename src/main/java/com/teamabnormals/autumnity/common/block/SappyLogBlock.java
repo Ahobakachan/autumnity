@@ -4,7 +4,6 @@ import com.teamabnormals.autumnity.core.registry.AutumnityItems;
 import com.teamabnormals.blueprint.core.util.BlockUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -20,19 +19,14 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.registries.DeferredBlock;
 
-import java.util.Set;
 import java.util.function.Supplier;
 
 public class SappyLogBlock extends RotatedPillarBlock {
-	private static final Set<ResourceLocation> RU_MAPLE_BIOMES = Set.of(
-			ResourceLocation.fromNamespaceAndPath("regions_unexplored", "maple_forest"),
-			ResourceLocation.fromNamespaceAndPath("regions_unexplored", "autumnal_maple_forest"),
-			ResourceLocation.fromNamespaceAndPath("regions_unexplored", "windswept_maple_forest")
-	);
+	private static final ResourceLocation RU_STRIPPED_MAPLE_LOG = ResourceLocation.fromNamespaceAndPath("regions_unexplored", "stripped_maple_log");
+	private static final ResourceLocation RU_STRIPPED_MAPLE_WOOD = ResourceLocation.fromNamespaceAndPath("regions_unexplored", "stripped_maple_wood");
 
 	private final Supplier<Block> saplessBlock;
 
@@ -57,25 +51,17 @@ public class SappyLogBlock extends RotatedPillarBlock {
 				player.awardStat(Stats.ITEM_USED.get(stack.getItem()));
 			}
 
-			level.setBlockAndUpdate(pos, BlockUtil.transferAllBlockStates(state, getSaplessBlock(level, pos).defaultBlockState()));
+			level.setBlockAndUpdate(pos, BlockUtil.transferAllBlockStates(state, getSaplessBlock().defaultBlockState()));
 			return ItemInteractionResult.sidedSuccess(level.isClientSide);
 		}
 
 		return super.useItemOn(stack, state, level, pos, player, hand, result);
 	}
 
-	private Block getSaplessBlock(Level level, BlockPos pos) {
-		ResourceLocation biomeId = level.getBiome(pos).unwrapKey().map(ResourceKey::location).orElse(null);
-		if (biomeId != null && RU_MAPLE_BIOMES.contains(biomeId)) {
-			ResourceLocation blockId = BuiltInRegistries.BLOCK.getKey(this);
-			ResourceLocation targetId = blockId.getPath().equals("sappy_maple_log")
-					? ResourceLocation.fromNamespaceAndPath("regions_unexplored", "stripped_maple_log")
-					: ResourceLocation.fromNamespaceAndPath("regions_unexplored", "stripped_maple_wood");
-			Block ruBlock = BuiltInRegistries.BLOCK.get(targetId);
-			if (ruBlock != Blocks.AIR) {
-				return ruBlock;
-			}
-		}
-		return this.saplessBlock.get();
+	private Block getSaplessBlock() {
+		ResourceLocation blockId = BuiltInRegistries.BLOCK.getKey(this);
+		ResourceLocation targetId = blockId.getPath().equals("sappy_maple_log") ? RU_STRIPPED_MAPLE_LOG : RU_STRIPPED_MAPLE_WOOD;
+		Block ruBlock = BuiltInRegistries.BLOCK.get(targetId);
+		return ruBlock != Blocks.AIR ? ruBlock : this.saplessBlock.get();
 	}
 }
