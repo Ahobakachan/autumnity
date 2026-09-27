@@ -28,54 +28,54 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 public class SappyLogBlock extends RotatedPillarBlock {
-\tprivate static final Set<ResourceLocation> RU_MAPLE_BIOMES = Set.of(
-\t\t\tResourceLocation.fromNamespaceAndPath("regions_unexplored", "maple_forest"),
-\t\t\tResourceLocation.fromNamespaceAndPath("regions_unexplored", "autumnal_maple_forest"),
-\t\t\tResourceLocation.fromNamespaceAndPath("regions_unexplored", "windswept_maple_forest")
-\t);
+	private static final Set<ResourceLocation> RU_MAPLE_BIOMES = Set.of(
+			ResourceLocation.fromNamespaceAndPath("regions_unexplored", "maple_forest"),
+			ResourceLocation.fromNamespaceAndPath("regions_unexplored", "autumnal_maple_forest"),
+			ResourceLocation.fromNamespaceAndPath("regions_unexplored", "windswept_maple_forest")
+	);
 
-\tprivate final Supplier<Block> saplessBlock;
+	private final Supplier<Block> saplessBlock;
 
-\tpublic SappyLogBlock(DeferredBlock<Block> saplessBlockIn, Properties properties) {
-\t\tsuper(properties);
-\t\tthis.saplessBlock = saplessBlockIn;
-\t}
+	public SappyLogBlock(DeferredBlock<Block> saplessBlockIn, Properties properties) {
+		super(properties);
+		this.saplessBlock = saplessBlockIn;
+	}
 
-\t@Override
-\tpublic ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
-\t\tif (stack.is(Items.GLASS_BOTTLE)) {
-\t\t\tstack.shrink(1);
-\t\t\tlevel.playSound(player, player.getX(), player.getY(), player.getZ(), SoundEvents.BOTTLE_FILL, SoundSource.NEUTRAL, 1.0F, 1.0F);
-\t\t\tif (stack.isEmpty()) {
-\t\t\t\tplayer.setItemInHand(hand, new ItemStack(AutumnityItems.SAP_BOTTLE.get()));
-\t\t\t} else if (!player.getInventory().add(new ItemStack(AutumnityItems.SAP_BOTTLE.get()))) {
-\t\t\t\tplayer.drop(new ItemStack(AutumnityItems.SAP_BOTTLE.get()), false);
-\t\t\t}
+	@Override
+	public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
+		if (stack.is(Items.GLASS_BOTTLE)) {
+			stack.shrink(1);
+			level.playSound(player, player.getX(), player.getY(), player.getZ(), SoundEvents.BOTTLE_FILL, SoundSource.NEUTRAL, 1.0F, 1.0F);
+			if (stack.isEmpty()) {
+				player.setItemInHand(hand, new ItemStack(AutumnityItems.SAP_BOTTLE.get()));
+			} else if (!player.getInventory().add(new ItemStack(AutumnityItems.SAP_BOTTLE.get()))) {
+				player.drop(new ItemStack(AutumnityItems.SAP_BOTTLE.get()), false);
+			}
 
-\t\t\tlevel.gameEvent(player, GameEvent.FLUID_PICKUP, pos);
-\t\t\tif (!level.isClientSide()) {
-\t\t\t\tplayer.awardStat(Stats.ITEM_USED.get(stack.getItem()));
-\t\t\t}
+			level.gameEvent(player, GameEvent.FLUID_PICKUP, pos);
+			if (!level.isClientSide()) {
+				player.awardStat(Stats.ITEM_USED.get(stack.getItem()));
+			}
 
-\t\t\tlevel.setBlockAndUpdate(pos, BlockUtil.transferAllBlockStates(state, getSaplessBlock(level, pos).defaultBlockState()));
-\t\t\treturn ItemInteractionResult.sidedSuccess(level.isClientSide);
-\t\t}
+			level.setBlockAndUpdate(pos, BlockUtil.transferAllBlockStates(state, getSaplessBlock(level, pos).defaultBlockState()));
+			return ItemInteractionResult.sidedSuccess(level.isClientSide);
+		}
 
-\t\treturn super.useItemOn(stack, state, level, pos, player, hand, result);
-\t}
+		return super.useItemOn(stack, state, level, pos, player, hand, result);
+	}
 
-\tprivate Block getSaplessBlock(Level level, BlockPos pos) {
-\t\tResourceLocation biomeId = level.getBiome(pos).unwrapKey().map(ResourceKey::location).orElse(null);
-\t\tif (biomeId != null && RU_MAPLE_BIOMES.contains(biomeId)) {
-\t\t\tResourceLocation blockId = BuiltInRegistries.BLOCK.getKey(this);
-\t\t\tResourceLocation targetId = blockId.getPath().equals("sappy_maple_log")
-\t\t\t\t\t? ResourceLocation.fromNamespaceAndPath("regions_unexplored", "stripped_maple_log")
-\t\t\t\t\t: ResourceLocation.fromNamespaceAndPath("regions_unexplored", "stripped_maple_wood");
-\t\t\tBlock ruBlock = BuiltInRegistries.BLOCK.get(targetId);
-\t\t\tif (ruBlock != Blocks.AIR) {
-\t\t\t\treturn ruBlock;
-\t\t\t}
-\t\t}
-\t\treturn this.saplessBlock.get();
-\t}
+	private Block getSaplessBlock(Level level, BlockPos pos) {
+		ResourceLocation biomeId = level.getBiome(pos).unwrapKey().map(ResourceKey::location).orElse(null);
+		if (biomeId != null && RU_MAPLE_BIOMES.contains(biomeId)) {
+			ResourceLocation blockId = BuiltInRegistries.BLOCK.getKey(this);
+			ResourceLocation targetId = blockId.getPath().equals("sappy_maple_log")
+					? ResourceLocation.fromNamespaceAndPath("regions_unexplored", "stripped_maple_log")
+					: ResourceLocation.fromNamespaceAndPath("regions_unexplored", "stripped_maple_wood");
+			Block ruBlock = BuiltInRegistries.BLOCK.get(targetId);
+			if (ruBlock != Blocks.AIR) {
+				return ruBlock;
+			}
+		}
+		return this.saplessBlock.get();
+	}
 }
